@@ -6,9 +6,13 @@ const app = express();
 // Initialize Supabase client
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
+if (!supabaseUrl || !supabaseKey) {
+  console.error('Missing SUPABASE_URL or SUPABASE_KEY environment variables');
+  process.exit(1); // Exit if environment variables are missing
+}
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Test ping on startup
+// Test ping on startup to verify Supabase connection
 async function testPing() {
   try {
     const { data, error } = await supabase
@@ -26,7 +30,7 @@ async function testPing() {
 }
 testPing();
 
-// Schedule cron job
+// Schedule cron job to ping Supabase every Monday and Thursday at 9:00 AM UTC
 cron.schedule('0 9 * * 1,4', async () => {
   try {
     const { data, error } = await supabase
@@ -44,9 +48,14 @@ cron.schedule('0 9 * * 1,4', async () => {
 });
 
 // Health check endpoint
-app.get('/health', (req, res) => res.status(200).json({ status: 'Script running' }));
-app.listen(process.env.PORT || 3000, () => {
-  console.log('Health check server running');
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'Script running' });
+});
+
+// Listen on Render's assigned port
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Health check server running on port ${port}`);
 });
 
 console.log('Supabase keep-alive script started. Pinging every Monday and Thursday at 9:00 AM UTC.');
