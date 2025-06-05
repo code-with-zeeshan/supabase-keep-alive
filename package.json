@@ -1,0 +1,18 @@
+{
+  "name": "supabase-keep-alive",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.10",
+    "dotenv": "^16.5.0",
+    "node-cron": "^4.1.0"
+  }
+}
