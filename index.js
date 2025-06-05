@@ -23,5 +23,10 @@ cron.schedule('0 9 * * 1,4', async () => {
   }
 });
 
+const express = require('express');
+const app = express();
+app.get('/health', (req, res) => res.status(200).json({ status: 'Script running' }));
+app.listen(process.env.PORT || 3000, () => console.log('Health check server running'));
+
 // Keep the script running
 console.log('Supabase keep-alive script started. Pinging every Monday and Thursday at 9:00 AM UTC.');
