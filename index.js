@@ -8,11 +8,11 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 if (!supabaseUrl || !supabaseKey) {
   console.error('Missing SUPABASE_URL or SUPABASE_KEY environment variables');
-  process.exit(1); // Exit if environment variables are missing
+  process.exit(1);
 }
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Test ping on startup to verify Supabase connection
+// Test ping on startup
 async function testPing() {
   try {
     const { data, error } = await supabase
@@ -20,30 +20,31 @@ async function testPing() {
       .select('id')
       .limit(1);
     if (error) {
-      console.error('Test ping error:', error);
+      console.error('Test ping error:', JSON.stringify(error));
       return;
     }
     console.log('Test ping successful:', data);
   } catch (err) {
-    console.error('Unexpected test ping error:', err);
+    console.error('Unexpected test ping error:', err.message);
   }
 }
 testPing();
 
-// Schedule cron job to ping Supabase every Monday and Thursday at 9:00 AM UTC
-cron.schedule('0 9 * * 1,4', async () => {
+// Schedule cron job to ping every minute for testing
+cron.schedule('* * * * *', async () => {
+  console.log('Cron job triggered at', new Date().toISOString());
   try {
     const { data, error } = await supabase
       .from('keep_alive')
       .select('id')
       .limit(1);
     if (error) {
-      console.error('Error pinging Supabase:', error);
+      console.error('Error pinging Supabase:', JSON.stringify(error));
       return;
     }
     console.log('Supabase ping successful at', new Date().toISOString(), data);
   } catch (err) {
-    console.error('Unexpected error:', err);
+    console.error('Unexpected cron error:', err.message);
   }
 });
 
@@ -58,4 +59,4 @@ app.listen(port, () => {
   console.log(`Health check server running on port ${port}`);
 });
 
-console.log('Supabase keep-alive script started. Pinging every Monday and Thursday at 9:00 AM UTC.');
+console.log('Supabase keep-alive script started. Pinging every minute for testing.');
