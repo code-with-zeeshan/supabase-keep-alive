@@ -1,0 +1,17 @@
+name: Ping Supabase to Prevent Pausing
+on:
+  schedule:
+    - cron: '0 9 * * 1,4' # Runs every Monday and Thursday at 9:00 AM UTC
+  workflow_dispatch: # Allows manual triggering
+jobs:
+  ping-supabase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send HTTP request to Supabase
+        run: |
+          curl -X GET \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            "https://rozgkceircipomfoukaq.supabase.co/rest/v1/keep_alive?select=id&limit=1"
+        env:
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
